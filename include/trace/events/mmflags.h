@@ -156,6 +156,7 @@ IF_HAVE_PG_IDLE(PG_idle,		"idle"		)
 	{VM_SEQ_READ,			"seqread"	},		\
 	{VM_RAND_READ,			"randread"	},		\
 	{VM_DONTCOPY,			"dontcopy"	},		\
+	{VM_WIPEONFORK,			"wipeonfork"	},		\
 	{VM_DONTEXPAND,			"dontexpand"	},		\
 	{VM_LOCKONFAULT,		"lockonfault"	},		\
 	{VM_ACCOUNT,			"account"	},		\

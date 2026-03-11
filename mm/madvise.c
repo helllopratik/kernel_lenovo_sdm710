@@ -79,6 +79,17 @@ static long madvise_behavior(struct vm_area_struct *vma,
 		}
 		new_flags &= ~VM_DONTCOPY;
 		break;
+	case MADV_WIPEONFORK:
+		if (vma->vm_flags & (VM_SHARED | VM_HUGETLB | VM_PFNMAP |
+				     VM_MIXEDMAP | VM_IO) || vma->vm_file) {
+			error = -EINVAL;
+			goto out;
+		}
+		new_flags |= VM_WIPEONFORK;
+		break;
+	case MADV_KEEPONFORK:
+		new_flags &= ~VM_WIPEONFORK;
+		break;
 	case MADV_DONTDUMP:
 		new_flags |= VM_DONTDUMP;
 		break;
@@ -606,6 +617,8 @@ madvise_behavior_valid(int behavior)
 	switch (behavior) {
 	case MADV_DOFORK:
 	case MADV_DONTFORK:
+	case MADV_WIPEONFORK:
+	case MADV_KEEPONFORK:
 	case MADV_NORMAL:
 	case MADV_SEQUENTIAL:
 	case MADV_RANDOM:
@@ -659,6 +672,8 @@ madvise_behavior_valid(int behavior)
  *  MADV_DONTFORK - omit this area from child's address space when forking:
  *		typically, to avoid COWing pages pinned by get_user_pages().
  *  MADV_DOFORK - cancel MADV_DONTFORK: no longer omit this area when forking.
+ *  MADV_WIPEONFORK - zero the memory in child process after a fork.
+ *  MADV_KEEPONFORK - undo MADV_WIPEONFORK.
  *  MADV_HWPOISON - trigger memory error handler as if the given memory range
  *		were corrupted by unrecoverable hardware memory failure.
  *  MADV_SOFT_OFFLINE - try to soft-offline the given range of memory.
